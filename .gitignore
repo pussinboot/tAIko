@@ -124,3 +124,5 @@ __pycache__
 .#*
 .coverage
 *.swp
+
+resources/taikotemp
