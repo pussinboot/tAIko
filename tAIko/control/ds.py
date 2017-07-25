@@ -6,6 +6,7 @@ import time
 
 EMU_TITLES = ['DeSmuME', 'Paused']
 
+# ctrl+f12 = scrot
 
 class KeyPresser:
     def __init__(self):
