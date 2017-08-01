@@ -12,7 +12,7 @@ class KeyPresser:
     def __init__(self):
         self.last_hwnd = None
 
-        self.key_delay = 0.1
+        self.key_delay = 0.15
         self.key_map = {
             'up': 0x26,
             'down': 0x28,
@@ -24,7 +24,9 @@ class KeyPresser:
             "r": ord("A"),
             "start": 0x0D,
             'pause': 0x13,
-            'step': ord("N")
+            'step': ord("N"),
+            'ctrl': 0x11,
+            'F12': 0x7B,
         }
 
     def _window_enum_callback(self, hwnd, *args):
@@ -38,8 +40,7 @@ class KeyPresser:
             return True
         return False
 
-    def send_keys(self, buts):
-        # print(buts)
+    def send_keys(self, buts, rev=True):
         cur_hwnd = win32gui.GetForegroundWindow()
         if cur_hwnd != self.last_hwnd:
             if not self.activate_emulator():
@@ -48,9 +49,10 @@ class KeyPresser:
 
         for but in buts:
             win32api.keybd_event(self.key_map[but], 0, 0, 0)
+            time.sleep(self.key_delay)
 
-        time.sleep(self.key_delay)
-        buts.reverse()
+        if rev:
+            buts.reverse()
 
         for but in buts:
             win32api.keybd_event(self.key_map[but], 0, win32con.KEYEVENTF_KEYUP, 0)
@@ -58,11 +60,19 @@ class KeyPresser:
     def send_key(self, but):
         self.send_keys([but])
 
+    def send_keys_combo(self, buts):
+        self.send_keys(buts, False)
+
+# training class
+# - needs to do presses (1 or 2, o or b)
+# - needs to advance frames & take screenshots (& tell us how to find latest screenshot)
 
 if __name__ == '__main__':
     kp = KeyPresser()
     # kp.send_key('start')
-    # time.sleep(0.5)
+    # time.sleep(0.5)b
     kp.send_keys(['a', 'step'])
+    kp.send_keys_combo(['ctrl', 'F12'])
+
     # time.sleep(0.5)
     # kp.send_key('start')
