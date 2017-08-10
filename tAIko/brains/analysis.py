@@ -80,11 +80,13 @@ class Color_Picker():
 
 
 class DS_Color_Picker(Color_Picker):
-    def __init__(self, imhelp):
+    def __init__(self, imhelp, offset=6):
         super(DS_Color_Picker, self).__init__([255, 74, 41], [49, 173, 198], 50, imhelp)
+        self.frame_offset = offset
 
     def pick_color(self, c_frame):
-        return super(DS_Color_Picker, self).pick_color(c_frame[75:108, 13:46, :])
+        o_s, o_f = 13 + self.frame_offset, 46 + self.frame_offset
+        return super(DS_Color_Picker, self).pick_color(c_frame[75:108, o_s:o_f, :])
 
 
 if __name__ == '__main__':
