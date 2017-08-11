@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 from matplotlib import colors as mplc
 
-from imaging import ImageHelper
+from .imaging import ImageHelper
 
 class DS_Scorer():
     def __init__(self, imhelp):
@@ -87,6 +87,10 @@ class DS_Color_Picker(Color_Picker):
     def pick_color(self, c_frame):
         o_s, o_f = 13 + self.frame_offset, 46 + self.frame_offset
         return super(DS_Color_Picker, self).pick_color(c_frame[75:108, o_s:o_f, :])
+
+    def check_lvl_over(self, c_frame):
+        top_half = c_frame[:192, :, :]
+        return np.sum(np.mean(np.mean(top_half, axis=1), axis=0) - [0, 0, 0]) < 10
 
 
 if __name__ == '__main__':
