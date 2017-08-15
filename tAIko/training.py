@@ -8,7 +8,7 @@ from control import ds
 
 
 class QQ_Learner:
-    def __init__(self, ds_trainer, savedata_folder=None):
+    def __init__(self, savedata_folder=None):
         # params
         self.alpha = 0.95
         self.gamma_const = 0.66
@@ -23,6 +23,7 @@ class QQ_Learner:
         # things to keep in mind
         self.last_state_action_pairs = []
         self.last_reward = 0
+        self.running = True
 
         # savedata
         if savedata_folder is None:
@@ -35,6 +36,7 @@ class QQ_Learner:
                 with np.load(self.savedata_fname) as saved_data:
                     self.Q_vals = saved_data['q_vals']
                     self.trained_n = saved_data['n']
+                    print('restarting training from', self.trained_n)
                 load_def = self.Q_vals.shape == (100, 3)
             except:
                 pass
@@ -61,13 +63,17 @@ class QQ_Learner:
         self.ds_s = analysis.DS_Scorer(self.imh)
         self.ds_a = analysis.DS_Color_Picker(self.imh)
 
-        self.trainer = ds_trainer
+        self.trainer = ds.Training(self.quit_fun)
 
         # finally start training
         self.trainer.choose_new_track()
 
     def save_data(self):
         np.savez(self.savedata_fname, q_vals=self.Q_vals, n=self.trained_n)
+
+    def quit_fun(self):
+        self.running = False
+        print('cya')
 
     def restart(self):
         # internal state
@@ -147,14 +153,14 @@ class QQ_Learner:
 
 
 if __name__ == '__main__':
-    training_control = ds.Training()
-    q_learner = QQ_Learner(training_control)
+    q_learner = QQ_Learner()
 
-    while True:
+    while q_learner.running:
         try:
             q_learner.training_step()
-        except:
-            q_learner.save_data()
+        except Exception as e:
+            print(e)
             break
 
+    q_learner.save_data()
     print('bye bye')

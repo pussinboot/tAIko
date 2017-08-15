@@ -17,7 +17,7 @@ SCROT_PATH = 'c:/games/emu/desmume-0.9.11-win64/Screenshots/'
 
 
 class KeyPresser:
-    def __init__(self):
+    def __init__(self, quit_fun=None):
         self.last_hwnd = None
         self.paused = None
 
@@ -41,6 +41,8 @@ class KeyPresser:
             'F12': 0x7B,
         }
 
+        self.quit_fun = quit_fun
+
     def _window_enum_callback(self, hwnd, *args):
         win_title = str(win32gui.GetWindowText(hwnd))
         if any(title in win_title for title in EMU_TITLES):
@@ -50,8 +52,13 @@ class KeyPresser:
     def activate_emulator(self):
         win32gui.EnumWindows(self._window_enum_callback, None)
         if self.last_hwnd is not None:
-            win32gui.SetForegroundWindow(self.last_hwnd)
-            return True
+            try:
+                win32gui.SetForegroundWindow(self.last_hwnd)
+                return True
+            except:
+                if self.quit_fun is not None:
+                    self.quit_fun()
+                return False
         return False
 
     def send_keys(self, buts, rev=True):
@@ -90,8 +97,8 @@ class KeyPresser:
 
 
 class GamePlayer:
-    def __init__(self):
-        self.kp = KeyPresser()
+    def __init__(self, kpq):
+        self.kp = KeyPresser(kpq)
         self.cc_to_but = {'o': ['a', 'b'], 'b': ['l', 'r']}
 
     def back_to_menu(self):
@@ -105,8 +112,8 @@ class GamePlayer:
 
 
 class Training(GamePlayer):
-    def __init__(self):
-        GamePlayer.__init__(self)
+    def __init__(self, kpq=None):
+        GamePlayer.__init__(self, kpq)
 
     def choose_new_track(self):
         self.back_to_menu()
