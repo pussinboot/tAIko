@@ -153,7 +153,7 @@ if __name__ == '__main__':
     while True:
         try:
             q_learner.training_step()
-        except KeyboardInterrupt:
+        except:
             q_learner.save_data()
             break
 
