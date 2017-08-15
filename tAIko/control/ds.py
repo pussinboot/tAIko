@@ -60,7 +60,7 @@ class KeyPresser:
             if not self.activate_emulator():
                 print('failed to find your emulator')
                 return
-            time.sleep(0.05)
+            time.sleep(0.125)
         for but in buts:
             win32api.keybd_event(self.key_map[but], 0, 0, 0)
             time.sleep(self.key_delay)
@@ -140,14 +140,15 @@ class Training(GamePlayer):
 
 if __name__ == '__main__':
     trainer = Training()
+    # trainer.kp.send_key('pause')
 
     trainer.choose_new_track()
-    for _ in range(5):
-        trainer.advance_frame()
+    # for _ in range(5):
+    #     trainer.advance_frame()
 
-    trainer.advance_frame(['o', 1])
+    # trainer.advance_frame(['o', 1])
 
-    for _ in range(3):
-        trainer.advance_frame()
+    # for _ in range(3):
+    #     trainer.advance_frame()
 
-    print(trainer.find_last_frame())
+    # print(trainer.find_last_frame())
