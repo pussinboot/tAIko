@@ -6,6 +6,8 @@ from scipy.stats import gamma as gamma_fun
 from brains import analysis, imaging
 from control import ds
 
+import logging
+
 
 class QQ_Learner:
     def __init__(self, savedata_folder=None):
@@ -25,6 +27,20 @@ class QQ_Learner:
         self.last_reward = 0
         self.running = True
 
+        # logging
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+
+        if not os.path.exists('./logs'):
+            os.mkdir('./logs')
+
+        fh = logging.FileHandler('./logs/training.log')
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        fh.setFormatter(formatter)
+        self.logger.addHandler(fh)
+
+        self.logger.info('started training')
+
         # savedata
         if savedata_folder is None:
             savedata_folder = '../resources/training_savedata/'
@@ -32,16 +48,18 @@ class QQ_Learner:
 
         load_def = True
         if os.path.exists(self.savedata_fname):
+            self.logger.info('trying to load savedata')
             try:
                 with np.load(self.savedata_fname) as saved_data:
                     self.Q_vals = saved_data['q_vals']
                     self.trained_n = saved_data['n']
-                    print('restarting training from', self.trained_n)
+                    self.logger.info('restarting training from %s', self.trained_n)
                 load_def = self.Q_vals.shape == (100, 3)
             except:
                 pass
 
         if load_def:
+            self.logger.info('loading default values..')
             self.Q_vals = np.zeros([100, 3])  # 100 intensities 3 actions
             self.trained_n = 0  # keep track of how many times we've updated Q
 
@@ -76,6 +94,7 @@ class QQ_Learner:
         print('cya')
 
     def restart(self):
+        self.logger.info('choosing new level')
         # internal state
         self.last_state_action_pairs = []
         self.last_reward = 0
@@ -83,6 +102,7 @@ class QQ_Learner:
         # helpful modules
         self.ds_s.restart()
         self.trainer.choose_new_track()
+        self.logger.info('new level chosen')
 
     # action selection
 
@@ -140,6 +160,7 @@ class QQ_Learner:
             print(self.trained_n, 'update q-valz score_diff =', score_diff)
             self.update_q(score_diff)
             self.last_state_action_pairs = []
+            self.logger.info('trial #{} complete, updated q-vals with a score_diff of {}'.format(self.trained_n, score_diff))
 
         # find current state
         color_choice, s = self.ds_a.pick_color(new_frame)
@@ -147,7 +168,7 @@ class QQ_Learner:
 
         # pick a new action?
         num_but = self.explore(cur_state)
-        # print(color_choice, cur_state, 'pressing', num_but, 'buttons')
+        self.logger.info('current state {}, want to press {} {} buttons'.format(cur_state, num_but, color_choice))
         self.trainer.advance_frame([color_choice, num_but])
         self.last_state_action_pairs += [(cur_state, num_but)]
 

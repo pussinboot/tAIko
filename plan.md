@@ -14,3 +14,11 @@ figure out wii u control
     more specifically look under network here
     `https://github.com/Maschell/controller_patcher`
 & test
+
+
+# some more concrete todos
+
+add logging everywhere >:(
+
+things like the emu control need to say when there's an error
+and i need to know where first screenshot of a training session is etc.
