@@ -22,3 +22,11 @@ add logging everywhere >:(
 
 things like the emu control need to say when there's an error
 and i need to know where first screenshot of a training session is etc.
+
+# testing..
+# - same as training except don't analyze score
+# do more logging! i dont think i'm pressing blue.. ever
+
+# add some ffmpeg magic to make vid
+
+something is definitely bonked in the loading...

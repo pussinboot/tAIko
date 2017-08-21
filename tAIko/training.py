@@ -54,7 +54,7 @@ class QQ_Learner:
                     self.Q_vals = saved_data['q_vals']
                     self.trained_n = saved_data['n']
                     self.logger.info('restarting training from %s', self.trained_n)
-                load_def = self.Q_vals.shape == (100, 3)
+                load_def = self.Q_vals.shape != (100, 3)
             except:
                 pass
 
