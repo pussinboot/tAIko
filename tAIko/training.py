@@ -26,6 +26,7 @@ class QQ_Learner:
         self.last_state_action_pairs = []
         self.last_reward = 0
         self.running = True
+        self.first_scrot = True
 
         # logging
         self.logger = logging.getLogger(__name__)
@@ -103,6 +104,7 @@ class QQ_Learner:
         self.ds_s.restart()
         self.trainer.choose_new_track()
         self.logger.info('new level chosen')
+        self.first_scrot = True
 
     # action selection
 
@@ -147,6 +149,11 @@ class QQ_Learner:
         new_f_fname = self.trainer.find_last_frame()
         new_frame = self.imh.clean_pic(new_f_fname)
 
+        # notify on lvl change
+        if self.first_scrot:
+            self.logger.info('new level start, first screenshot @ {}'.format(new_f_fname))
+            self.first_scrot = False
+
         # if lvl ended we start over
         if self.ds_a.check_lvl_over(new_frame):
             self.restart()
@@ -168,7 +175,7 @@ class QQ_Learner:
 
         # pick a new action?
         num_but = self.explore(cur_state)
-        self.logger.info('current state {}, want to press {} {} buttons'.format(cur_state, num_but, color_choice))
+        self.logger.debug('current state {}, want to press {} {} buttons'.format(cur_state, num_but, color_choice))
         self.trainer.advance_frame([color_choice, num_but])
         self.last_state_action_pairs += [(cur_state, num_but)]
 
